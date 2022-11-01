@@ -1,0 +1,11 @@
+geonameid,name,asciiname,alternatenames,latitude,longitude,featureclass,featurecode,countrycode,cc2,admin1code,admin2code,admin3code,admin4code,population,elevation,dem,timezone,modificationdate
+3466017,Ribeirão Cocais,Ribeirao Cocais,,-15.76667,-56.15,H,STM,BR,,14,,,,0,,150,America/Cuiaba,1993-12-17
+3466018,Córrego dos Cocais,Corrego dos Cocais,Corrego dos Cocais$Córrego dos Cocais$Rio Cocais,-18.2,-42.96667,H,STM,BR,BR,15,,,,0,,686,America/Sao_Paulo,2020-06-11
+3466019,Cocais,Cocais,Cocais,-21.83333,-47.03333,S,RSTP,BR,,27,3510807,,,0,,672,America/Sao_Paulo,2013-03-05
+3466020,Sítio dos Cocais,Sitio dos Cocais,Cocais$Sitio dos Cocais$Sítio dos Cocais,-23.68514,-47.3229,P,PPL,BR,,27,3519709,,,0,,919,America/Sao_Paulo,2020-06-11
+3466021,Cocais,Cocais,Cocaes,-19.865,-43.45611,P,PPLL,BR,BR,15,3105400,,,0,,746,America/Sao_Paulo,2012-08-03
+3466022,Cocais,Cocais,,-15.06667,-56.55,P,PPL,BR,,14,5107701,,,0,,245,America/Cuiaba,2012-08-03
+3466023,Cocais,Cocais,Cocais,-21.85,-42.88333,T,MT,BR,,15,3101508,,,0,,889,America/Sao_Paulo,2012-12-05
+3466024,Rio do Cobre,Rio do Cobre,Do Cobre River$Rio do Cobre,-25.03333,-52.43333,H,STM,BR,,18,,,,0,,544,America/Sao_Paulo,2021-08-15
+3466025,Rio das Cobras,Rio das Cobras,Das Cobras Rive$rRio das Cobras,-25.56667,-52.78333,H,STM,BR,,18,,,,0,,398,America/Sao_Paulo,2021-08-14
+3466026,Ribeirão das Cobras,Ribeirao das Cobras,Ribeirao das Cobras$Ribeirão das Cobras,-23.12982,-46.09753,H,STM,BR,,27,,,,0,,698,America/Sao_Paulo,2022-02-18

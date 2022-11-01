@@ -1,0 +1,39 @@
+df[['othername0', 'othername1', 'othername2', 'othername3', 
+        'othername4', 'othername5', 'othername6', 'othername7', 'othername8', 
+        'othername9', 'othername10', 'othername11', 'othername12','othername13',
+        'othername14','othername15','othername16','othername17','othername18','othername19',
+        'othername20','othername21','othername22','othername23','othername24','othername25','othername26',
+        'othername27','othername28','othername29','othername30','othername31','othername32','othername33',
+        'othername34','othername35','othername36','othername37','othername38','othername39','othername40',
+        'othername41','othername42','othername43','othername44','othername45','othername46','othername47',
+        'othername48','othername49','othername50','othername51','othername52','othername53','othername54',
+        'othername55', 'othername56', 'othername57', 'othername58', 'othername59','othername60', 'othername61', 
+        'othername62', 'othername63', 'othername64','othername65', 'othername66', 'othername67', 'othername68',
+        'othername69', 'othername70','othername71','othername72','othername73','othername74','othername75','othername76',
+        'othername77','othername78','othername79','othername80','othername81','othername82','othername83',
+        'othername84','othername85','othername86','othername87','othername88','othername89','othername90',
+        'othername91','othername92','othername93','othername94','othername95','othername96','othername97',
+        'othername98', 'othername99','othername100','othername101','othername102','othername103','othername104','othername105',
+        'othername106','othername107','othername108','othername109','othername110','othername111','othername112','othername113',
+        'othername114','othername115','othername116','othername117','othername118','othername119','othername120','othername121',
+        'othername1220','othername123','othername124','othername125','othername126','othername127','othername128','othername129',
+        'othername1300','othername131','othername132','othername133','othername134','othername135','othername136','othername137',
+        'othername1380','othername139','othername140','othername141','othername142','othername143','othername144','othername145',
+        'othername1460','othername147','othername148','othername149','othername150','othername151','othername152','othername153',
+        'othername1540','othername155','othername156','othername157','othername158','othername159','othername160','othername161',
+        'othername162','othername163','othername164','othername165','othername166']] = df['alternatenames'].str.split('$', expand=True)
+
+        # CQL para criar os nós
+# cqlCreate1 = """LOAD CSV WITH HEADERS FROM 'file:///teste.csv' AS linha
+
+# CREATE (br:BRAZIL {elevation:linha.elevation, featurecode:linha.featurecode,
+# geonameid:linha.geonameid, timezone:linha.timezone, latitude:linha.latitude,
+# dem:linha.dem, admin2code:linha.admin2code, population:linha.population,
+# featureclass:linha.featureclass, cc2:linha.cc2,
+# admin3code:linha.admin3code, name:linha.name, asciiname: linha.asciiname,
+# altenatenames:linha.alternatenames, admin1code:linha.admin1code,
+# countrycode:linha.countrycode, admin4code:linha.admin4code,
+# modificationdate:linha.modificationdate, longitude:linha.longitude,
+# othername:linha.othername, othername1:linha.othername1, othername2:linha.othername2})"""
+
+
