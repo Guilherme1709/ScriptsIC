@@ -37,3 +37,412 @@ df[['othername0', 'othername1', 'othername2', 'othername3',
 # othername:linha.othername, othername1:linha.othername1, othername2:linha.othername2})"""
 
 
+
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames.csv' AS linha
+
+                MATCH(other74:othername74{othername74:linha.othername74})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE (other74)-[:OTHER_NAME74]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other75:othername75{othername75:linha.othername75})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other75)-[:OTHER_NAME75]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other76:othername76{othername76:linha.othername76})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE (other76)-[:OTHER_NAME76]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other77:othername77{othername77:linha.othername77})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other77)-[:OTHER_NAME77]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other78:othername78{othername78:linha.othername78})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other78)-[:OTHER_NAME78]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other79:othername79{othername79:linha.othername79})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other79)-[:OTHER_NAME79]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other80:othername80{othername80:linha.othername80})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other80)-[:OTHER_NAME80]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+
+                MATCH(other81:othername81{othername81:linha.othername81})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other81)-[:OTHER_NAME81]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other82:othername82{othername82:linha.othername82})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other82)-[:OTHER_NAME82]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other83:othername83{othername83:linha.othername83})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other83)-[:OTHER_NAME83]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+
+                MATCH(other84:othername84{othername84:linha.othername84})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other84)-[:OTHER_NAME84]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+
+                MATCH(other85:othername85{othername85:linha.othername85})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other85)-[:OTHER_NAME85]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+
+                MATCH(other86:othername86{othername86:linha.othername86})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other86)-[:OTHER_NAME86]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other87:othername87{othername87:linha.othername87})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other87)-[:OTHER_NAME87]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other88:othername88{othername88:linha.othername88})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other88)-[:OTHER_NAME88]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other89:othername89{othername89:linha.othername89})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other89)-[:OTHER_NAME89]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other90:othername90{othername90:linha.othername90})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other90)-[:OTHER_NAME90]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other91:othername91{othername91:linha.othername91})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE (other91)-[:OTHER_NAME91]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+
+                MATCH(other92:othername92{othername92:linha.othername92})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other92)-[:OTHER_NAME92]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+
+                MATCH(other93:othername93{othername93:linha.othername93})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other93)-[:OTHER_NAME93]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+
+                MATCH(other94:othername94{othername94:linha.othername94})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other94)-[:OTHER_NAME94]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other95:othername95{othername95:linha.othername95})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE(other95)-[:OTHER_NAME95]->(Br)
+
+                return *;"""
+
+cqlCreate15 = """LOAD CSV WITH HEADERS FROM file:///OtherNames.csv AS linha
+
+                MATCH(other96:othername96{othername96:linha.othername96})
+
+                MATCH(Br:BRAZIL{name:linha.name})
+
+                CREATE (other96)-[:OTHER_NAME96]->(Br)
+
+                return *;"""
+
+                graphDB_Session.run(cqlCreate)
+        graphDB_Session.run(cqlCreate1)
+        graphDB_Session.run(cqlCreate2)
+        graphDB_Session.run(cqlCreate3)
+        graphDB_Session.run(cqlCreate4)
+        graphDB_Session.run(cqlCreate5)
+        graphDB_Session.run(cqlCreate6)
+        graphDB_Session.run(cqlCreate7)
+        graphDB_Session.run(cqlCreate8)
+        graphDB_Session.run(cqlCreate9)
+        graphDB_Session.run(cqlCreate10)
+        graphDB_Session.run(cqlCreate11)
+        graphDB_Session.run(cqlCreate12)
+        graphDB_Session.run(cqlCreate13)
+        graphDB_Session.run(cqlCreate14)
+        graphDB_Session.run(cqlCreate15)
+        graphDB_Session.run(cqlCreate16)
+        graphDB_Session.run(cqlCreate17)
+        graphDB_Session.run(cqlCreate18)
+        graphDB_Session.run(cqlCreate19)
+        graphDB_Session.run(cqlCreate20)
+        graphDB_Session.run(cqlCreate21)
+        graphDB_Session.run(cqlCreate22)
+        graphDB_Session.run(cqlCreate23)
+        graphDB_Session.run(cqlCreate24)
+        graphDB_Session.run(cqlCreate25)
+        graphDB_Session.run(cqlCreate26)
+        graphDB_Session.run(cqlCreate27)
+        graphDB_Session.run(cqlCreate28)
+        graphDB_Session.run(cqlCreate29)
+        graphDB_Session.run(cqlCreate30)
+        graphDB_Session.run(cqlCreate31)
+        graphDB_Session.run(cqlCreate32)
+        graphDB_Session.run(cqlCreate33)
+        graphDB_Session.run(cqlCreate34)
+        graphDB_Session.run(cqlCreate35)
+        graphDB_Session.run(cqlCreate36)
+        graphDB_Session.run(cqlCreate37)
+        graphDB_Session.run(cqlCreate38)
+        graphDB_Session.run(cqlCreate39)
+        graphDB_Session.run(cqlCreate40)
+        graphDB_Session.run(cqlCreate41)
+        graphDB_Session.run(cqlCreate42)
+        graphDB_Session.run(cqlCreate43)
+        graphDB_Session.run(cqlCreate44)
+        graphDB_Session.run(cqlCreate45)
+        graphDB_Session.run(cqlCreate46)
+        graphDB_Session.run(cqlCreate47)
+        graphDB_Session.run(cqlCreate48)
+        graphDB_Session.run(cqlCreate49)
+        graphDB_Session.run(cqlCreate50)
+        graphDB_Session.run(cqlCreate51)
+        graphDB_Session.run(cqlCreate52)
+        graphDB_Session.run(cqlCreate53)
+        graphDB_Session.run(cqlCreate54)
+        graphDB_Session.run(cqlCreate55)
+        graphDB_Session.run(cqlCreate56)
+        graphDB_Session.run(cqlCreate57)
+        graphDB_Session.run(cqlCreate58)
+        graphDB_Session.run(cqlCreate59)
+        graphDB_Session.run(cqlCreate60)
+        graphDB_Session.run(cqlCreate61)
+        graphDB_Session.run(cqlCreate62)
+        graphDB_Session.run(cqlCreate63)
+        graphDB_Session.run(cqlCreate64)
+        graphDB_Session.run(cqlCreate65)
+        graphDB_Session.run(cqlCreate66)
+        graphDB_Session.run(cqlCreate67)
+        graphDB_Session.run(cqlCreate68)
+        graphDB_Session.run(cqlCreate69)
+        graphDB_Session.run(cqlCreate70)
+        graphDB_Session.run(cqlCreate71)
+        graphDB_Session.run(cqlCreate72)
+        graphDB_Session.run(cqlCreate73)
+        graphDB_Session.run(cqlCreate74)
+        graphDB_Session.run(cqlCreate75)
+        graphDB_Session.run(cqlCreate76)
+        graphDB_Session.run(cqlCreate77)
+        graphDB_Session.run(cqlCreate78)
+        graphDB_Session.run(cqlCreate79)
+        graphDB_Session.run(cqlCreate80)
+        graphDB_Session.run(cqlCreate81)
+        graphDB_Session.run(cqlCreate82)
+        graphDB_Session.run(cqlCreate83)
+        graphDB_Session.run(cqlCreate84)
+        graphDB_Session.run(cqlCreate85)
+        graphDB_Session.run(cqlCreate86)
+        graphDB_Session.run(cqlCreate87)
+        graphDB_Session.run(cqlCreate88)
+        graphDB_Session.run(cqlCreate89)
+        graphDB_Session.run(cqlCreate90)
+        graphDB_Session.run(cqlCreate91)
+        graphDB_Session.run(cqlCreate92)
+        graphDB_Session.run(cqlCreate93)
+        graphDB_Session.run(cqlCreate94)
+        graphDB_Session.run(cqlCreate95)
+        graphDB_Session.run(cqlCreate96)
+        graphDB_Session.run(cqlCreate97)
+        graphDB_Session.run(cqlCreate98)
+        graphDB_Session.run(cqlCreate99)
+        graphDB_Session.run(cqlCreate100)
+        graphDB_Session.run(cqlCreate101)
+        graphDB_Session.run(cqlCreate102)
+        graphDB_Session.run(cqlCreate103)
+        graphDB_Session.run(cqlCreate104)
+        graphDB_Session.run(cqlCreate105)
+        graphDB_Session.run(cqlCreate106)
+        graphDB_Session.run(cqlCreate107)
+        graphDB_Session.run(cqlCreate108)
+        graphDB_Session.run(cqlCreate109)
+        graphDB_Session.run(cqlCreate110)
+        graphDB_Session.run(cqlCreate111)
+        graphDB_Session.run(cqlCreate112)
+        graphDB_Session.run(cqlCreate113)
+        graphDB_Session.run(cqlCreate114)
+        graphDB_Session.run(cqlCreate115)
+        graphDB_Session.run(cqlCreate116)
+        graphDB_Session.run(cqlCreate117)
+        graphDB_Session.run(cqlCreate118)
+        graphDB_Session.run(cqlCreate119)
+        graphDB_Session.run(cqlCreate120)
+        graphDB_Session.run(cqlCreate121)
+        graphDB_Session.run(cqlCreate122)
+        graphDB_Session.run(cqlCreate123)
+        graphDB_Session.run(cqlCreate124)
+        graphDB_Session.run(cqlCreate125)
+        graphDB_Session.run(cqlCreate126)
+        graphDB_Session.run(cqlCreate127)
+        graphDB_Session.run(cqlCreate128)
+        graphDB_Session.run(cqlCreate129)
+        graphDB_Session.run(cqlCreate130)
+        graphDB_Session.run(cqlCreate131)
+        graphDB_Session.run(cqlCreate132)
+        graphDB_Session.run(cqlCreate133)
+        graphDB_Session.run(cqlCreate134)
+        graphDB_Session.run(cqlCreate135)
+        graphDB_Session.run(cqlCreate136)
+        graphDB_Session.run(cqlCreate137)
+        graphDB_Session.run(cqlCreate138)
+        graphDB_Session.run(cqlCreate139)
+        graphDB_Session.run(cqlCreate140)
+        graphDB_Session.run(cqlCreate141)
+        graphDB_Session.run(cqlCreate142)
+        graphDB_Session.run(cqlCreate143)
+        graphDB_Session.run(cqlCreate144)
+        graphDB_Session.run(cqlCreate145)
+        graphDB_Session.run(cqlCreate146)
+        graphDB_Session.run(cqlCreate147)
+        graphDB_Session.run(cqlCreate148)
+        graphDB_Session.run(cqlCreate149)
+        graphDB_Session.run(cqlCreate150)
+        graphDB_Session.run(cqlCreate151)
+        graphDB_Session.run(cqlCreate152)
+        graphDB_Session.run(cqlCreate153)
+        graphDB_Session.run(cqlCreate154)
+        graphDB_Session.run(cqlCreate155)
+        graphDB_Session.run(cqlCreate156)
+        graphDB_Session.run(cqlCreate157)
+        graphDB_Session.run(cqlCreate158)
+        graphDB_Session.run(cqlCreate159)
+        graphDB_Session.run(cqlCreate160)
+        graphDB_Session.run(cqlCreate161)
+        graphDB_Session.run(cqlCreate162)
+        graphDB_Session.run(cqlCreate163)
+        graphDB_Session.run(cqlCreate164)
+        graphDB_Session.run(cqlCreate165)
+        graphDB_Session.run(cqlCreate166)
+        graphDB_Session.run(cqlCreate167)
+        graphDB_Session.run(cqlCreate168)
+        graphDB_Session.run(cqlCreate169)
