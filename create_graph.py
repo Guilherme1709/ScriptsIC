@@ -11615,20 +11615,19 @@ def div_names():
         '$', expand=True).add_prefix('othername'))
     print(df)
 
-    remove = ['alternatenames', 'othername166', 'othername67','othername165', 'othername164', 'othername164', 'othername163'
-    , 'othername162', 'othername161', 'othername160', 'othername159', 'othername158', 'othername157', 'othername156'
-    , 'othername155', 'othername154', 'othername153', 'othername152', 'othername151'
-    , 'othername150', 'othername149', 'othername148', 'othername147', 'othername146' , 'othername145', 'othername144', 
-    'othername145', 'othername144', 'othername143', 'othername142', 'othername141', 'othername140', 'othername139', 
-    'othername138', 'othername137', 'othername136', 'othername135', 'othername134', 'othername133', 'othername132', 
-    'othername131', 'othername130', 'othername129', 'othername128', 'othername127', 'othername126'
-    , 'othername125', 'othername124', 'othername123','othername122', 'othername121'
-    , 'othername120', 'othername119', 'othername118', 'othername117', 'othername116', 'othername115', 'othername114'
-    , 'othername113', 'othername112', 'othername111', 'othername110', 'othername109', 'othername108', 'othername107', 'othername106',
-    'othername105', 'othername104', 'othername103', 'othername102', 'othername101', 'othername100', 'othername99', 'othername98', 'othername97',
-    'othername96','othername95','othername94','othername93','othername92','othername91', 'othername90','othername89','othername88', 'othername87','othername86',
-    'othername85','othername84','othername83','othername82','othername81','othername80','othername79','othername78','othername77','othername76','othername75', 
-    'othername74','othername73','othername72','othername71','othername70','othername69','othername68','othername67']
+    remove = ['alternatenames', 'othername166', 'othername67','othername165', 'othername164', 'othername164', 'othername163', 
+    'othername162', 'othername161', 'othername160', 'othername159', 'othername158', 'othername157', 'othername156', 'othername155', 
+    'othername154', 'othername153', 'othername152', 'othername151', 'othername150', 'othername149', 'othername148', 'othername147', 
+    'othername146' , 'othername145', 'othername144', 'othername145', 'othername144', 'othername143', 'othername142', 'othername141',
+    'othername140', 'othername139', 'othername138', 'othername137', 'othername136', 'othername135', 'othername134', 'othername133', 
+    'othername132', 'othername131', 'othername130', 'othername129', 'othername128', 'othername127', 'othername126', 'othername125', 
+    'othername124', 'othername123','othername122', 'othername121', 'othername120', 'othername119', 'othername118', 'othername117', 
+    'othername116', 'othername115', 'othername114', 'othername113', 'othername112', 'othername111', 'othername110', 'othername109',
+    'othername108', 'othername107', 'othername106', 'othername105', 'othername104', 'othername103', 'othername102', 'othername101', 
+    'othername100', 'othername99', 'othername98', 'othername97', 'othername96','othername95','othername94','othername93','othername92',
+    'othername91', 'othername90','othername89','othername88', 'othername87','othername86', 'othername85','othername84','othername83',
+    'othername82','othername81','othername80','othername79','othername78','othername77','othername76','othername75', 'othername74',
+    'othername73','othername72','othername71','othername70','othername69','othername68','othername67']
 
     df2 = df.drop(remove, axis=1)
     df2.to_csv('OtherNames.csv')
