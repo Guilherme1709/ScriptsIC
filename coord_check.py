@@ -6,13 +6,13 @@ import pandas as pd
 csv_data = []
 
 # Read CSV data into the list
-with open("OtherNames.csv", "r", encoding="utf8") as csvfile:
+with open("OtherNames_0.csv", "r", encoding="utf8") as csvfile:
     reader = csv.reader(csvfile)
     for row in reader:
         csv_data.append(row)
 
 # Read WKT data from file
-with open("brazil.wkt", "r") as wktfile:
+with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\sudeste\\sudeste.wkt", "r") as wktfile:
     wkt_data = shapely.wkt.loads(wktfile.read())
 
 
