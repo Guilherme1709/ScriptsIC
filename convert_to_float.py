@@ -1,24 +1,24 @@
-import csv
+import pandas as pd
 
-# List to store the CSV data
-csv_data = []
 
-# Read CSV data into the list
-with open("OtherNames.csv", "r", encoding="utf8") as csvfile:
-    reader = csv.reader(csvfile)
-    for row in reader:
-        csv_data.append(row)
+def convert_latitude():
+    # Carrega o arquivo CSV
+    df = pd.read_csv("OtherNames_0_colunas.csv")
 
-# Convert the specified column from string to float
-column_index = 4  # The index of the column to be converted (0-based)
-for row in csv_data:
-    row[4] = float(row[4])
+    # Converte a coluna "latitude" para float
+    df["latitude"] = df["latitude"].astype(str)
 
-column_index = 5  # The index of the column to be converted (0-based)
-for row in csv_data:
-    row[5] = float(row[5])
+    # Salva o DataFrame de volta para o arquivo CSV
+    df.to_csv("OtherNames_0_colunas.csv", index=False)
 
-# Write the updated data to a new CSV file
-with open("OtherNamesConverted.csv", "w", newline="") as csvfile:
-    writer = csv.writer(csvfile)
-    writer.writerows(csv_data)
+
+def convert_longitude():
+    # Carrega o arquivo CSV
+    df = pd.read_csv("OtherNames_0_colunas.csv")
+
+    # Converte a coluna "latitude" para float
+    df["longitude"] = df["longitude"].astype(str)
+
+    # Salva o DataFrame de volta para o arquivo CSV
+    df.to_csv("OtherNames_0_colunas.csv", index=False)
+    print("longitude convertida")

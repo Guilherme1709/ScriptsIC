@@ -17,7 +17,7 @@ uri = "bolt://localhost:7687"
 
 userName = "neo4j"
 
-password = "1234"
+password = "12345678"
 
 # Conection with the data base
 db = GraphDatabase.driver(uri, auth=(userName, password))
@@ -10979,81 +10979,106 @@ cqlCreate606 = """LOAD CSV WITH HEADERS FROM 'file:///regions.csv' AS linha
                 CREATE (regions:REGIONS{name:linha.name}) RETURN regions"""
 
 cqlCreate607 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_0.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                
-                MERGE (location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:BRAZIL{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate608 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_1.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate609 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_2.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate610 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_3.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate611 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_4.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate612 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_5.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate613 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_6.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate614 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_7.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate615 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_8.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate616 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_9.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate617 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_10.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate618 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_11.csv' AS linha
+                MATCH(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
 
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
 cqlCreate619 = """LOAD CSV WITH HEADERS FROM 'file:///OtherNames_12.csv' AS linha
-    
-                MERGE(location:LOCATIONS{name:linha.name})-[isin:IS_IN]->(country:COUNTRY{name:"Brazil"})
+                MERGE(location:LOCATIONS), (country:BRAZIL)
+                WHERE location.name = linha.name AND country.name = "Brasil"
+
+                MERGE (location)-[isin:IS_IN]->(country)
 
                 return isin;"""
 
@@ -11161,366 +11186,264 @@ def div_names():
 
 # Function to create a relationship between the locations of the OtherNames_0 file and the LOCATIONS node.
 def create_relatBR_0():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_0.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_0.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate605)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as session:
+                    session.run("MATCH (country:BRAZIL {name: 'Brasil'}), (location:LOCATIONS {longitude: $longitude, latitude: $latitude}) "
+                                "MERGE (location)-[:IS_IN]->(country)",
+                                longitude=row[5], latitude=row[4])
+                    print("created\n", ":", csv_coord)
+            else:
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
 #create_relatBR_0()
 
 
-# Function to create a relationship between the locations of the OtherNames_1 file and the Brazil node:
 def create_relatBR_1():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_1.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_1.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate606)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate608)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
 #create_relatBR_1()
 
 
-# Function to create a relationship between the locations of the OtherNames_2 file and the Brazil node:
 def create_relatBR_2():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_2.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_2.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate607)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
-#create_relatBR_2()
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate609)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
+# create_relatBR_2()
 
 
-# Function to create a relationship between the locations of the OtherNames_3 file and the Brazil node:
 def create_relatBR_3():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_3.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_3.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate608)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
-#create_relatBR_3()
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate610)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
+# create_relatBR_3()
 
 
-# Function to create a relationship between the locations of the OtherNames_4 file and the Brazil node:
 def create_relatBR_4():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_4.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_4.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate609)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
-#create_relatBR_4()
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate611)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
+# create_relatBR_4()
 
 
-# Function to create a relationship between the locations of the OtherNames_5 file and the Brazil node:
 def create_relatBR_5():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_5.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_5.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate610)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
-#create_relatBR_5()
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate612)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
+# create_relatBR_5()
 
 
-# Function to create a relationship between the locations of the OtherNames_6 file and the Brazil node:
 def create_relatBR_6():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_6.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_6.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate611)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
-#create_relatBR_6()
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate613)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
+# create_relatBR_6()
 
 
-# Function to create a relationship between the locations of the OtherNames_7 file and the Brazil node:
 def create_relatBR_7():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_7.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_7.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate612)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate614)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
 # create_relatBR_7()
 
 
-# Function to create a relationship between the locations of the OtherNames_8 file and the Brazil node:
 def create_relatBR_8():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_8.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_8.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate613)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate615)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
 # create_relatBR_8()
 
 
-# Function to create a relationship between the locations of the OtherNames_9 file and the Brazil node:
 def create_relatBR_9():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_9.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_9.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate614)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
-#create_relatBR_9()
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate616)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
+# create_relatBR_9()
 
 
-# Function to create a relationship between the locations of the OtherNames_10 file and the Brazil node:
 def create_relatBR_10():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_10.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+    # Read CSV data
+    df = pd.read_csv("OtherNames_10.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate615)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
-#create_relatBR_10()
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate617)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
+# create_relatBR_10()
 
 
-# Function to create a relationship between the locations of the OtherNames_11 file and the Brazil node:
 def create_relatBR_11():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_11.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+# Read CSV data
+    df = pd.read_csv("OtherNames_11.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate616)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
-#create_relatBR_11()
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate618)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
+# create_relatBR_11()
 
 
-# Function to create a relationship between the locations of the OtherNames_12 file and the Brazil node:
 def create_relatBR_12():
-    # List to store the CSV data
-    csv_data = []
-
-# Read CSV data into the list
-    with open("OtherNames_12.csv", "r", encoding="utf8") as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            csv_data.append(row)
-
+# Read CSV data
+    df = pd.read_csv("OtherNames_12.csv")
 # Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\WKT_files\\país\\brazil.wkt", "r") as wktfile:
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
         wkt_data = shapely.wkt.loads(wktfile.read())
-
-
 # Check the coordinates between the CSV and WKT data
-    for i, row in enumerate(csv_data):
-        csv_coord = (float(row[5]), float(row[4]))
-        if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-            with db.session() as graphDB_Session:
-                graphDB_Session.run(cqlCreate617)
-                print('created\n')
-        else:
-            print("The following coordinates don't match", i+1, ":", csv_coord)
-#create_relatBR_12()
+        for i, row in df.iterrows():
+            csv_coord = (float(row[5]), float(row[4]))
+            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
+                with db.session() as graphDB_Session:
+                    graphDB_Session.run(cqlCreate619)
+                    print("created\n")
+            else:
+
+                print("The following coordinates do not match",
+                      i+1, ":", csv_coord)
+# create_relatBR_12()
 
 
 def create_relatSUD_0():
@@ -11863,7 +11786,9 @@ def create_nodes():
         graphDB_Session.run(cqlCreate581)
         graphDB_Session.run(cqlCreate594)
         graphDB_Session.run(cqlCreate604)
-#create_nodes()
+        graphDB_Session.run(cqlCreate605)
+        graphDB_Session.run(cqlCreate606)
+create_nodes()
 
 # Create main indexes
 def create_indexes():
