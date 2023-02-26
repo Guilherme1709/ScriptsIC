@@ -99,8 +99,6 @@ def regions():
         print('\t\t\telse:\n')
         print('\t\t\t\tprint("The following coordinates do not match", i+1, ":", csv_coord)')
         print('#create_relatBR_'+str(i)+'()\n')
-
 regions()
-
 
 
