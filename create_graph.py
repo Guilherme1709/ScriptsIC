@@ -1,26 +1,11 @@
-import os
-import glob
-import ctypes
-from heapq import merge
-import random
-import shapely.wkt
-from venv import create
-from neo4j import GraphDatabase
-import csv
 import pandas as pd
-from sqlalchemy import table
-from tqdm import tqdm
+from py2neo import Graph
+from shapely.wkt import loads
+from shapely.geometry import Point
 
 
-# Credentials of the data base
-uri = "bolt://localhost:7687"
-
-userName = "neo4j"
-
-password = "12345678"
-
-# Conection with the data base
-db = GraphDatabase.driver(uri, auth=(userName, password))
+# Connect to Neo4j
+graph = Graph("bolt://localhost:7687", auth=("neo4j", "12345678"))
 
 # Queries to create nodes and relationships
 
@@ -11181,742 +11166,6959 @@ def div_names():
 
     df2 = df.drop(remove, axis=1)
     df2.to_csv('OtherNames.csv')
-#div_names()
+# div_names()
 
 
 # Function to create a relationship between the locations of the OtherNames_0 file and the LOCATIONS node.
-def create_relatBR_0():
-    # Read CSV data
+def check_locations_0():
+    # Load the CSV file with location data
     df = pd.read_csv("OtherNames_0.csv")
-# Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
-        wkt_data = shapely.wkt.loads(wktfile.read())
-# Check the coordinates between the CSV and WKT data
-        for i, row in df.iterrows():
-            csv_coord = (float(row[5]), float(row[4]))
-            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-                with db.session() as session:
-                    session.run("MATCH (country:BRAZIL {name: 'Brasil'}), (location:LOCATIONS {longitude: $longitude, latitude: $latitude}) "
-                                "MERGE (location)-[:IS_IN]->(country)",
-                                longitude=row[5], latitude=row[4])
-                    print("created\n", ":", csv_coord)
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Connect to Neo4j
+    graph = Graph("bolt://localhost:7687", auth=("neo4j", "12345678"))
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
             else:
-                print("The following coordinates do not match",
-                      i+1, ":", csv_coord)
-#create_relatBR_0()
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_0()
 
 
-def create_relatBR_1():
-    # Read CSV data
+def check_locations_1():
+    # Load the CSV file with location data
     df = pd.read_csv("OtherNames_1.csv")
-# Read WKT data from file
-    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wktfile:
-        wkt_data = shapely.wkt.loads(wktfile.read())
-# Check the coordinates between the CSV and WKT data
-        for i, row in df.iterrows():
-            csv_coord = (float(row[5]), float(row[4]))
-            if wkt_data.contains(shapely.geometry.Point(*csv_coord)):
-                with db.session() as graphDB_Session:
-                    graphDB_Session.run(cqlCreate608)
-                    print("created\n")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
             else:
+                print(f"{row['name']} don't match with Nordeste:", point)
 
-                print("The following coordinates do not match",
-                      i+1, ":", csv_coord)
-#create_relatBR_1()
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
 
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_1()
+
+
+def check_locations_2():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_2.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_2()
+
+
+def check_locations_3():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_3.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_3()
+
+
+def check_locations_4():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_4.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_4()
+
+
+def check_locations_5():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_5.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_5()
+
+
+def check_locations_6():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_6.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_6()
+
+
+def check_locations_7():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_7.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_7()
+
+
+def check_locations_8():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_8.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_8()
+
+
+def check_locations_9():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_9.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_9()
+
+
+def check_locations_10():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_10.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_10()
+
+
+def check_locations_11():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_11.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_11()
+
+
+def check_locations_12():
+    # Load the CSV file with location data
+    df = pd.read_csv("OtherNames_12.csv")
+
+    # Load the WKT file with Brazil boundary polygon
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\brasil.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        brazil_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\nordeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        nordeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\norte.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sudeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sudeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sul.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\centro-oeste.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        centro_oeste_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ac.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        acre_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\al.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        alagoas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\am.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amazonas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ap.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        amapa_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ba.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        bahia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ce.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        ceara_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\df.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        distrito_federal_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\es.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        espirito_santo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\go.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        goias_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ma.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        maranhao_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mg.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        minas_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ms.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\mt.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        mato_grosso_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pa.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        para_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pb.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        paraiba_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pe.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        pernambuco_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pi.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        piaui_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\pr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        parana_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rj.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rn.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_norte_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\ro.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rondonia_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rr.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        roraima_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\rs.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        rio_g_sul_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sc.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        santa_catarina_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\se.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sergipe_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\sp.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        sao_paulo_polygon = loads(wkt_data)
+
+    with open("C:\\Users\\guilh\\OneDrive\\Documentos\\Faculdade\\Períodos\\IC - Gazetteer\\scriptspython\\wkt_polygons_bruno\\to.wkt", "r") as wkt_file:
+        wkt_data = wkt_file.read()
+        tocantins_polygon = loads(wkt_data)
+
+    # Loop through each row in the CSV file
+    for index, row in df.iterrows():
+        # Extract latitude and longitude values from the CSV data
+        latitude = row["latitude"]
+        longitude = row["longitude"]
+
+        # Create a shapely Point object from the coordinates
+        point = Point(longitude, latitude)
+
+        # Check if the point is inside the Brazil boundary polygon
+        if brazil_polygon.contains(point):
+            # If the point is inside the polygon, create a relationship in Neo4j
+            query = f'MATCH(b:BRAZIL), (l:LOCATIONS) WHERE b.name = "Brasil" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_COUNTRY]->(b)'
+            graph.run(query)
+
+            print(f"Relationship created for {row['name']} with Brazil")
+
+            # Check if the point is inside the Regions and States boundary polygon
+            if nordeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Nordeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Nordeste")
+
+                if alagoas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Alagoas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Alagoas")
+                else:
+                    print(f"{row['name']} don't match with Alagoas:", point)
+
+                if bahia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Bahia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Bahia")
+                else:
+                    print(f"{row['name']} don't match with Bahia:", point)
+
+                if ceara_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Ceará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Ceará")
+                else:
+                    print(f"{row['name']} don't match with Ceará:", point)
+
+                if maranhao_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Maranhão" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Maranhão")
+                else:
+                    print(f"{row['name']} don't match with Maranhão:", point)
+
+                if paraiba_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraíba" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraíba")
+                else:
+                    print(f"{row['name']} don't match with Paraíba:", point)
+
+                if pernambuco_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pernambuco" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Pernambuco")
+                else:
+                    print(f"{row['name']} don't match with Pernambuco:", point)
+
+                if piaui_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Piauí" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Piauí")
+                else:
+                    print(f"{row['name']} don't match with Piauí:", point)
+
+                if rio_g_norte_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Norte")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Norte:", point)
+
+                if sergipe_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Sergipe" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Sergipe")
+                else:
+                    print(f"{row['name']} don't match with Sergipe:", point)
+            else:
+                print(f"{row['name']} don't match with Nordeste:", point)
+
+            if norte_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Norte" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Norte")
+
+                # Check if the point is inside the States boundary polygon
+                if acre_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Acre" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Acre")
+                else:
+                    print(f"{row['name']} don't match with Acre:", point)
+
+                if amazonas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amazonas" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Amazonas")
+                else:
+                    print(f"{row['name']} don't match with Amazonas:", point)
+
+                if amapa_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Amapá" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Amapá")
+                else:
+                    print(f"{row['name']} don't match with Amapá:", point)
+
+                if rondonia_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rondônia" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rondônia")
+                else:
+                    print(f"{row['name']} don't match with Rondônia:", point)
+
+                if roraima_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Roraima" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Roraima")
+                else:
+                    print(f"{row['name']} don't match with Roraima:", point)
+
+                if tocantins_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Tocantins" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Tocantins")
+                else:
+                    print(f"{row['name']} don't match with Tocantins:", point)
+
+                if para_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Pará" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Pará")
+                else:
+                    print(f"{row['name']} don't match with Pará:", point)
+            else:
+                print(f"{row['name']} don't match with Norte:", point)
+
+            if sudeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sudeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sudeste")
+
+                if espirito_santo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Espírito Santo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Espírito Santo")
+                else:
+                    print(
+                        f"{row['name']} don't match with Espírito Santo:", point)
+
+                if minas_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Minas Gerais" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Minas Gerais")
+                else:
+                    print(
+                        f"{row['name']} don't match with Minas Gerais:", point)
+
+                if sao_paulo_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "São Paulo" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with São Paulo")
+                else:
+                    print(f"{row['name']} don't match with São Paulo:", point)
+
+                if rio_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio de Janeiro" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio de Janeiro")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio de Janeiro:", point)
+
+            else:
+                print(f"{row['name']} don't match Sudeste:", point)
+
+            if sul_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(f"Relationship created for {row['name']} with Sul")
+
+                if rio_g_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Rio Grande do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Rio Grande do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Rio Grande do Sul:", point)
+
+                if parana_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Paraná" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Paraná")
+                else:
+                    print(f"{row['name']} don't match with Paraná:", point)
+
+                if santa_catarina_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Santa Catarina" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Santa Catarina")
+                else:
+                    print(
+                        f"{row['name']} don't match with Santa Catarina:", point)
+
+            else:
+                print(f"{row['name']} don't match with Sul:", point)
+
+            if centro_oeste_polygon.contains(point):
+                # If the point is inside the polygon, create a relationship in Neo4j
+                query = f'MATCH(r:REGIONS), (l:LOCATIONS) WHERE r.name = "Centro-Oeste" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_REGION]->(r)'
+                graph.run(query)
+
+                print(
+                    f"Relationship created for {row['name']} with Centro-Oeste")
+
+                if goias_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Goiás" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(f"Relationship created for {row['name']} with Goiás")
+                else:
+                    print(f"{row['name']} don't match with Goiás:", point)
+
+                if mato_sul_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso do Sul" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso do Sul")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso do Sul:", point)
+
+                if mato_grosso_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Mato Grosso" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Mato Grosso")
+                else:
+                    print(
+                        f"{row['name']} don't match with Mato Grosso:", point)
+
+                if distrito_federal_polygon.contains(point):
+                    # If the point is inside the polygon, create a relationship in Neo4j
+                    query = f'MATCH(s:STATES), (l:LOCATIONS) WHERE s.name = "Distrito Federal" and l.latitude = "{row["latitude"]}" and l.longitude = "{row["longitude"]}" MERGE (l)-[isin:IS_IN_STATE]->(s)'
+                    graph.run(query)
+
+                    print(
+                        f"Relationship created for {row['name']} with Distrito Federal")
+                else:
+                    print(
+                        f"{row['name']} don't match with Distrito Federal:", point)
+
+            else:
+                print(f"{row['name']} don't match with Centro-Oeste:", point)
+        else:
+            print(f"{row['name']} don't match with Brazil:", point)
+# check_locations_12()
 
 # Create main nodes:
+
+
 def create_nodes():
-    with db.session() as graphDB_Session:
-        graphDB_Session.run(cqlCreate0)
-        graphDB_Session.run(cqlCreate47)
-        graphDB_Session.run(cqlCreate105)
-        graphDB_Session.run(cqlCreate163)
-        graphDB_Session.run(cqlCreate232)
-        graphDB_Session.run(cqlCreate291)
-        graphDB_Session.run(cqlCreate360)
-        graphDB_Session.run(cqlCreate415)
-        graphDB_Session.run(cqlCreate465)
-        graphDB_Session.run(cqlCreate534)
-        graphDB_Session.run(cqlCreate548)
-        graphDB_Session.run(cqlCreate581)
-        graphDB_Session.run(cqlCreate594)
-        graphDB_Session.run(cqlCreate604)
-        graphDB_Session.run(cqlCreate605)
-        graphDB_Session.run(cqlCreate606)
-create_nodes()
+    with graph.session() as graph:
+        graph.run(cqlCreate0)
+        graph.run(cqlCreate47)
+        graph.run(cqlCreate105)
+        graph.run(cqlCreate163)
+        graph.run(cqlCreate232)
+        graph.run(cqlCreate291)
+        graph.run(cqlCreate360)
+        graph.run(cqlCreate415)
+        graph.run(cqlCreate465)
+        graph.run(cqlCreate534)
+        graph.run(cqlCreate548)
+        graph.run(cqlCreate581)
+        graph.run(cqlCreate594)
+        graph.run(cqlCreate604)
+        graph.run(cqlCreate605)
+        graph.run(cqlCreate606)
+# create_nodes()
 
 # Create main indexes
+
+
 def create_indexes():
-    with db.session() as graphDB_Session:
-        graphDB_Session.run(cqlCreate00)
-        graphDB_Session.run(cqlCreate01)
-        graphDB_Session.run(cqlCreate02)
-        graphDB_Session.run(cqlCreate03)
-        graphDB_Session.run(cqlCreate04)
-        graphDB_Session.run(cqlCreate05)
-        graphDB_Session.run(cqlCreate06)
-        graphDB_Session.run(cqlCreate07)
-        graphDB_Session.run(cqlCreate08)
-        graphDB_Session.run(cqlCreate09)
-        graphDB_Session.run(cqlCreate010)
-        graphDB_Session.run(cqlCreate011)
-        graphDB_Session.run(cqlCreate012)
-        graphDB_Session.run(cqlCreate013)
-        graphDB_Session.run(cqlCreate014)
-        graphDB_Session.run(cqlCreate015)
-        graphDB_Session.run(cqlCreate016)
-        graphDB_Session.run(cqlCreate017)
-        graphDB_Session.run(cqlCreate018)
-        graphDB_Session.run(cqlCreate019)
-        graphDB_Session.run(cqlCreate020)
-        graphDB_Session.run(cqlCreate021)
-        graphDB_Session.run(cqlCreate022)
-        graphDB_Session.run(cqlCreate023)
-        graphDB_Session.run(cqlCreate024)
-        graphDB_Session.run(cqlCreate025)
-        graphDB_Session.run(cqlCreate026)
-        graphDB_Session.run(cqlCreate027)
-        graphDB_Session.run(cqlCreate028)
-        graphDB_Session.run(cqlCreate029)
-        graphDB_Session.run(cqlCreate030)
-        graphDB_Session.run(cqlCreate031)
-        graphDB_Session.run(cqlCreate032)
-        graphDB_Session.run(cqlCreate033)
-        graphDB_Session.run(cqlCreate034)
-        graphDB_Session.run(cqlCreate035)
-        graphDB_Session.run(cqlCreate036)
-        graphDB_Session.run(cqlCreate037)
-        graphDB_Session.run(cqlCreate038)
-        graphDB_Session.run(cqlCreate039)
-        graphDB_Session.run(cqlCreate040)
-        graphDB_Session.run(cqlCreate041)
-        graphDB_Session.run(cqlCreate042)
-        graphDB_Session.run(cqlCreate043)
-        graphDB_Session.run(cqlCreate044)
-        graphDB_Session.run(cqlCreate045)
-        graphDB_Session.run(cqlCreate046)
-        graphDB_Session.run(cqlCreate047)
-        graphDB_Session.run(cqlCreate048)
-        graphDB_Session.run(cqlCreate049)
-        graphDB_Session.run(cqlCreate050)
-        graphDB_Session.run(cqlCreate051)
-        graphDB_Session.run(cqlCreate052)
-        graphDB_Session.run(cqlCreate053)
-        graphDB_Session.run(cqlCreate054)
-        graphDB_Session.run(cqlCreate055)
-        graphDB_Session.run(cqlCreate056)
-        graphDB_Session.run(cqlCreate057)
-        graphDB_Session.run(cqlCreate058)
-        graphDB_Session.run(cqlCreate059)
-        graphDB_Session.run(cqlCreate060)
-        graphDB_Session.run(cqlCreate061)
-        graphDB_Session.run(cqlCreate062)
-        graphDB_Session.run(cqlCreate063)
-        graphDB_Session.run(cqlCreate064)
-        graphDB_Session.run(cqlCreate065)
-        graphDB_Session.run(cqlCreate066)
-        graphDB_Session.run(cqlCreate067)
-        graphDB_Session.run(cqlCreate068)
-        graphDB_Session.run(cqlCreate069)
-        graphDB_Session.run(cqlCreate070)
-        graphDB_Session.run(cqlCreate071)
-#create_indexes()
+    with graph.session() as graph:
+        graph.run(cqlCreate00)
+        graph.run(cqlCreate01)
+        graph.run(cqlCreate02)
+        graph.run(cqlCreate03)
+        graph.run(cqlCreate04)
+        graph.run(cqlCreate05)
+        graph.run(cqlCreate06)
+        graph.run(cqlCreate07)
+        graph.run(cqlCreate08)
+        graph.run(cqlCreate09)
+        graph.run(cqlCreate010)
+        graph.run(cqlCreate011)
+        graph.run(cqlCreate012)
+        graph.run(cqlCreate013)
+        graph.run(cqlCreate014)
+        graph.run(cqlCreate015)
+        graph.run(cqlCreate016)
+        graph.run(cqlCreate017)
+        graph.run(cqlCreate018)
+        graph.run(cqlCreate019)
+        graph.run(cqlCreate020)
+        graph.run(cqlCreate021)
+        graph.run(cqlCreate022)
+        graph.run(cqlCreate023)
+        graph.run(cqlCreate024)
+        graph.run(cqlCreate025)
+        graph.run(cqlCreate026)
+        graph.run(cqlCreate027)
+        graph.run(cqlCreate028)
+        graph.run(cqlCreate029)
+        graph.run(cqlCreate030)
+        graph.run(cqlCreate031)
+        graph.run(cqlCreate032)
+        graph.run(cqlCreate033)
+        graph.run(cqlCreate034)
+        graph.run(cqlCreate035)
+        graph.run(cqlCreate036)
+        graph.run(cqlCreate037)
+        graph.run(cqlCreate038)
+        graph.run(cqlCreate039)
+        graph.run(cqlCreate040)
+        graph.run(cqlCreate041)
+        graph.run(cqlCreate042)
+        graph.run(cqlCreate043)
+        graph.run(cqlCreate044)
+        graph.run(cqlCreate045)
+        graph.run(cqlCreate046)
+        graph.run(cqlCreate047)
+        graph.run(cqlCreate048)
+        graph.run(cqlCreate049)
+        graph.run(cqlCreate050)
+        graph.run(cqlCreate051)
+        graph.run(cqlCreate052)
+        graph.run(cqlCreate053)
+        graph.run(cqlCreate054)
+        graph.run(cqlCreate055)
+        graph.run(cqlCreate056)
+        graph.run(cqlCreate057)
+        graph.run(cqlCreate058)
+        graph.run(cqlCreate059)
+        graph.run(cqlCreate060)
+        graph.run(cqlCreate061)
+        graph.run(cqlCreate062)
+        graph.run(cqlCreate063)
+        graph.run(cqlCreate064)
+        graph.run(cqlCreate065)
+        graph.run(cqlCreate066)
+        graph.run(cqlCreate067)
+        graph.run(cqlCreate068)
+        graph.run(cqlCreate069)
+        graph.run(cqlCreate070)
+        graph.run(cqlCreate071)
+# create_indexes()
 
 
 # Create main realtionships
 def create_relationships():
-    with db.session() as graphDB_Session:
-        graphDB_Session.run(cqlCreate1)
-        graphDB_Session.run(cqlCreate2)
-        graphDB_Session.run(cqlCreate3)
-        graphDB_Session.run(cqlCreate4)
-        graphDB_Session.run(cqlCreate5)
-        graphDB_Session.run(cqlCreate6)
-        graphDB_Session.run(cqlCreate7)
-        graphDB_Session.run(cqlCreate8)
-        graphDB_Session.run(cqlCreate9)
-        graphDB_Session.run(cqlCreate10)
-        graphDB_Session.run(cqlCreate11)
-        graphDB_Session.run(cqlCreate12)
-        graphDB_Session.run(cqlCreate13)
-        graphDB_Session.run(cqlCreate14)
-        graphDB_Session.run(cqlCreate15)
-        graphDB_Session.run(cqlCreate16)
-        graphDB_Session.run(cqlCreate17)
-        graphDB_Session.run(cqlCreate18)
-        graphDB_Session.run(cqlCreate19)
-        graphDB_Session.run(cqlCreate20)
-        graphDB_Session.run(cqlCreate21)
-        graphDB_Session.run(cqlCreate22)
-        graphDB_Session.run(cqlCreate23)
-        graphDB_Session.run(cqlCreate24)
-        graphDB_Session.run(cqlCreate25)
-        graphDB_Session.run(cqlCreate26)
-        graphDB_Session.run(cqlCreate27)
-        graphDB_Session.run(cqlCreate28)
-        graphDB_Session.run(cqlCreate29)
-        graphDB_Session.run(cqlCreate30)
-        graphDB_Session.run(cqlCreate31)
-        graphDB_Session.run(cqlCreate32)
-        graphDB_Session.run(cqlCreate33)
-        graphDB_Session.run(cqlCreate34)
-        graphDB_Session.run(cqlCreate35)
-        graphDB_Session.run(cqlCreate36)
-        graphDB_Session.run(cqlCreate37)
-        graphDB_Session.run(cqlCreate38)
-        graphDB_Session.run(cqlCreate39)
-        graphDB_Session.run(cqlCreate40)
-        graphDB_Session.run(cqlCreate41)
-        graphDB_Session.run(cqlCreate42)
-        graphDB_Session.run(cqlCreate43)
-        graphDB_Session.run(cqlCreate44)
-        graphDB_Session.run(cqlCreate45)
-        graphDB_Session.run(cqlCreate46)
-        graphDB_Session.run(cqlCreate48)
-        graphDB_Session.run(cqlCreate49)
-        graphDB_Session.run(cqlCreate50)
-        graphDB_Session.run(cqlCreate51)
-        graphDB_Session.run(cqlCreate52)
-        graphDB_Session.run(cqlCreate53)
-        graphDB_Session.run(cqlCreate54)
-        graphDB_Session.run(cqlCreate55)
-        graphDB_Session.run(cqlCreate56)
-        graphDB_Session.run(cqlCreate57)
-        graphDB_Session.run(cqlCreate58)
-        graphDB_Session.run(cqlCreate59)
-        graphDB_Session.run(cqlCreate60)
-        graphDB_Session.run(cqlCreate61)
-        graphDB_Session.run(cqlCreate62)
-        graphDB_Session.run(cqlCreate63)
-        graphDB_Session.run(cqlCreate64)
-        graphDB_Session.run(cqlCreate65)
-        graphDB_Session.run(cqlCreate66)
-        graphDB_Session.run(cqlCreate67)
-        graphDB_Session.run(cqlCreate68)
-        graphDB_Session.run(cqlCreate69)
-        graphDB_Session.run(cqlCreate70)
-        graphDB_Session.run(cqlCreate71)
-        graphDB_Session.run(cqlCreate72)
-        graphDB_Session.run(cqlCreate73)
-        graphDB_Session.run(cqlCreate74)
-        graphDB_Session.run(cqlCreate75)
-        graphDB_Session.run(cqlCreate76)
-        graphDB_Session.run(cqlCreate77)
-        graphDB_Session.run(cqlCreate78)
-        graphDB_Session.run(cqlCreate79)
-        graphDB_Session.run(cqlCreate80)
-        graphDB_Session.run(cqlCreate81)
-        graphDB_Session.run(cqlCreate82)
-        graphDB_Session.run(cqlCreate83)
-        graphDB_Session.run(cqlCreate84)
-        graphDB_Session.run(cqlCreate85)
-        graphDB_Session.run(cqlCreate86)
-        graphDB_Session.run(cqlCreate87)
-        graphDB_Session.run(cqlCreate88)
-        graphDB_Session.run(cqlCreate89)
-        graphDB_Session.run(cqlCreate90)
-        graphDB_Session.run(cqlCreate91)
-        graphDB_Session.run(cqlCreate92)
-        graphDB_Session.run(cqlCreate93)
-        graphDB_Session.run(cqlCreate94)
-        graphDB_Session.run(cqlCreate95)
-        graphDB_Session.run(cqlCreate96)
-        graphDB_Session.run(cqlCreate97)
-        graphDB_Session.run(cqlCreate98)
-        graphDB_Session.run(cqlCreate99)
-        graphDB_Session.run(cqlCreate100)
-        graphDB_Session.run(cqlCreate101)
-        graphDB_Session.run(cqlCreate102)
-        graphDB_Session.run(cqlCreate103)
-        graphDB_Session.run(cqlCreate104)
-        graphDB_Session.run(cqlCreate106)
-        graphDB_Session.run(cqlCreate107)
-        graphDB_Session.run(cqlCreate108)
-        graphDB_Session.run(cqlCreate109)
-        graphDB_Session.run(cqlCreate110)
-        graphDB_Session.run(cqlCreate111)
-        graphDB_Session.run(cqlCreate112)
-        graphDB_Session.run(cqlCreate113)
-        graphDB_Session.run(cqlCreate114)
-        graphDB_Session.run(cqlCreate115)
-        graphDB_Session.run(cqlCreate116)
-        graphDB_Session.run(cqlCreate117)
-        graphDB_Session.run(cqlCreate118)
-        graphDB_Session.run(cqlCreate119)
-        graphDB_Session.run(cqlCreate120)
-        graphDB_Session.run(cqlCreate121)
-        graphDB_Session.run(cqlCreate122)
-        graphDB_Session.run(cqlCreate123)
-        graphDB_Session.run(cqlCreate124)
-        graphDB_Session.run(cqlCreate125)
-        graphDB_Session.run(cqlCreate126)
-        graphDB_Session.run(cqlCreate127)
-        graphDB_Session.run(cqlCreate128)
-        graphDB_Session.run(cqlCreate129)
-        graphDB_Session.run(cqlCreate130)
-        graphDB_Session.run(cqlCreate131)
-        graphDB_Session.run(cqlCreate132)
-        graphDB_Session.run(cqlCreate133)
-        graphDB_Session.run(cqlCreate134)
-        graphDB_Session.run(cqlCreate135)
-        graphDB_Session.run(cqlCreate136)
-        graphDB_Session.run(cqlCreate137)
-        graphDB_Session.run(cqlCreate138)
-        graphDB_Session.run(cqlCreate139)
-        graphDB_Session.run(cqlCreate140)
-        graphDB_Session.run(cqlCreate141)
-        graphDB_Session.run(cqlCreate142)
-        graphDB_Session.run(cqlCreate143)
-        graphDB_Session.run(cqlCreate144)
-        graphDB_Session.run(cqlCreate145)
-        graphDB_Session.run(cqlCreate146)
-        graphDB_Session.run(cqlCreate147)
-        graphDB_Session.run(cqlCreate148)
-        graphDB_Session.run(cqlCreate149)
-        graphDB_Session.run(cqlCreate150)
-        graphDB_Session.run(cqlCreate151)
-        graphDB_Session.run(cqlCreate152)
-        graphDB_Session.run(cqlCreate153)
-        graphDB_Session.run(cqlCreate154)
-        graphDB_Session.run(cqlCreate155)
-        graphDB_Session.run(cqlCreate156)
-        graphDB_Session.run(cqlCreate157)
-        graphDB_Session.run(cqlCreate158)
-        graphDB_Session.run(cqlCreate159)
-        graphDB_Session.run(cqlCreate160)
-        graphDB_Session.run(cqlCreate161)
-        graphDB_Session.run(cqlCreate162)
-        graphDB_Session.run(cqlCreate164)
-        graphDB_Session.run(cqlCreate165)
-        graphDB_Session.run(cqlCreate166)
-        graphDB_Session.run(cqlCreate167)
-        graphDB_Session.run(cqlCreate168)
-        graphDB_Session.run(cqlCreate169)
-        graphDB_Session.run(cqlCreate170)
-        graphDB_Session.run(cqlCreate171)
-        graphDB_Session.run(cqlCreate172)
-        graphDB_Session.run(cqlCreate173)
-        graphDB_Session.run(cqlCreate174)
-        graphDB_Session.run(cqlCreate175)
-        graphDB_Session.run(cqlCreate176)
-        graphDB_Session.run(cqlCreate177)
-        graphDB_Session.run(cqlCreate178)
-        graphDB_Session.run(cqlCreate179)
-        graphDB_Session.run(cqlCreate180)
-        graphDB_Session.run(cqlCreate181)
-        graphDB_Session.run(cqlCreate182)
-        graphDB_Session.run(cqlCreate183)
-        graphDB_Session.run(cqlCreate184)
-        graphDB_Session.run(cqlCreate185)
-        graphDB_Session.run(cqlCreate186)
-        graphDB_Session.run(cqlCreate187)
-        graphDB_Session.run(cqlCreate188)
-        graphDB_Session.run(cqlCreate189)
-        graphDB_Session.run(cqlCreate190)
-        graphDB_Session.run(cqlCreate191)
-        graphDB_Session.run(cqlCreate192)
-        graphDB_Session.run(cqlCreate193)
-        graphDB_Session.run(cqlCreate194)
-        graphDB_Session.run(cqlCreate195)
-        graphDB_Session.run(cqlCreate196)
-        graphDB_Session.run(cqlCreate197)
-        graphDB_Session.run(cqlCreate198)
-        graphDB_Session.run(cqlCreate199)
-        graphDB_Session.run(cqlCreate200)
-        graphDB_Session.run(cqlCreate201)
-        graphDB_Session.run(cqlCreate202)
-        graphDB_Session.run(cqlCreate203)
-        graphDB_Session.run(cqlCreate204)
-        graphDB_Session.run(cqlCreate205)
-        graphDB_Session.run(cqlCreate206)
-        graphDB_Session.run(cqlCreate207)
-        graphDB_Session.run(cqlCreate208)
-        graphDB_Session.run(cqlCreate209)
-        graphDB_Session.run(cqlCreate210)
-        graphDB_Session.run(cqlCreate211)
-        graphDB_Session.run(cqlCreate212)
-        graphDB_Session.run(cqlCreate213)
-        graphDB_Session.run(cqlCreate214)
-        graphDB_Session.run(cqlCreate215)
-        graphDB_Session.run(cqlCreate216)
-        graphDB_Session.run(cqlCreate217)
-        graphDB_Session.run(cqlCreate218)
-        graphDB_Session.run(cqlCreate219)
-        graphDB_Session.run(cqlCreate220)
-        graphDB_Session.run(cqlCreate221)
-        graphDB_Session.run(cqlCreate222)
-        graphDB_Session.run(cqlCreate223)
-        graphDB_Session.run(cqlCreate224)
-        graphDB_Session.run(cqlCreate225)
-        graphDB_Session.run(cqlCreate226)
-        graphDB_Session.run(cqlCreate227)
-        graphDB_Session.run(cqlCreate228)
-        graphDB_Session.run(cqlCreate229)
-        graphDB_Session.run(cqlCreate230)
-        graphDB_Session.run(cqlCreate231)
-        graphDB_Session.run(cqlCreate233)
-        graphDB_Session.run(cqlCreate234)
-        graphDB_Session.run(cqlCreate235)
-        graphDB_Session.run(cqlCreate236)
-        graphDB_Session.run(cqlCreate237)
-        graphDB_Session.run(cqlCreate238)
-        graphDB_Session.run(cqlCreate239)
-        graphDB_Session.run(cqlCreate240)
-        graphDB_Session.run(cqlCreate241)
-        graphDB_Session.run(cqlCreate242)
-        graphDB_Session.run(cqlCreate243)
-        graphDB_Session.run(cqlCreate244)
-        graphDB_Session.run(cqlCreate245)
-        graphDB_Session.run(cqlCreate246)
-        graphDB_Session.run(cqlCreate247)
-        graphDB_Session.run(cqlCreate248)
-        graphDB_Session.run(cqlCreate249)
-        graphDB_Session.run(cqlCreate250)
-        graphDB_Session.run(cqlCreate251)
-        graphDB_Session.run(cqlCreate252)
-        graphDB_Session.run(cqlCreate253)
-        graphDB_Session.run(cqlCreate254)
-        graphDB_Session.run(cqlCreate255)
-        graphDB_Session.run(cqlCreate256)
-        graphDB_Session.run(cqlCreate257)
-        graphDB_Session.run(cqlCreate258)
-        graphDB_Session.run(cqlCreate259)
-        graphDB_Session.run(cqlCreate260)
-        graphDB_Session.run(cqlCreate261)
-        graphDB_Session.run(cqlCreate262)
-        graphDB_Session.run(cqlCreate263)
-        graphDB_Session.run(cqlCreate264)
-        graphDB_Session.run(cqlCreate265)
-        graphDB_Session.run(cqlCreate266)
-        graphDB_Session.run(cqlCreate267)
-        graphDB_Session.run(cqlCreate268)
-        graphDB_Session.run(cqlCreate269)
-        graphDB_Session.run(cqlCreate270)
-        graphDB_Session.run(cqlCreate271)
-        graphDB_Session.run(cqlCreate272)
-        graphDB_Session.run(cqlCreate273)
-        graphDB_Session.run(cqlCreate274)
-        graphDB_Session.run(cqlCreate275)
-        graphDB_Session.run(cqlCreate276)
-        graphDB_Session.run(cqlCreate277)
-        graphDB_Session.run(cqlCreate278)
-        graphDB_Session.run(cqlCreate279)
-        graphDB_Session.run(cqlCreate280)
-        graphDB_Session.run(cqlCreate281)
-        graphDB_Session.run(cqlCreate282)
-        graphDB_Session.run(cqlCreate283)
-        graphDB_Session.run(cqlCreate284)
-        graphDB_Session.run(cqlCreate285)
-        graphDB_Session.run(cqlCreate286)
-        graphDB_Session.run(cqlCreate287)
-        graphDB_Session.run(cqlCreate288)
-        graphDB_Session.run(cqlCreate289)
-        graphDB_Session.run(cqlCreate290)
-        graphDB_Session.run(cqlCreate292)
-        graphDB_Session.run(cqlCreate293)
-        graphDB_Session.run(cqlCreate294)
-        graphDB_Session.run(cqlCreate295)
-        graphDB_Session.run(cqlCreate296)
-        graphDB_Session.run(cqlCreate297)
-        graphDB_Session.run(cqlCreate298)
-        graphDB_Session.run(cqlCreate299)
-        graphDB_Session.run(cqlCreate300)
-        graphDB_Session.run(cqlCreate301)
-        graphDB_Session.run(cqlCreate302)
-        graphDB_Session.run(cqlCreate303)
-        graphDB_Session.run(cqlCreate304)
-        graphDB_Session.run(cqlCreate305)
-        graphDB_Session.run(cqlCreate306)
-        graphDB_Session.run(cqlCreate307)
-        graphDB_Session.run(cqlCreate308)
-        graphDB_Session.run(cqlCreate309)
-        graphDB_Session.run(cqlCreate310)
-        graphDB_Session.run(cqlCreate311)
-        graphDB_Session.run(cqlCreate312)
-        graphDB_Session.run(cqlCreate313)
-        graphDB_Session.run(cqlCreate314)
-        graphDB_Session.run(cqlCreate315)
-        graphDB_Session.run(cqlCreate316)
-        graphDB_Session.run(cqlCreate317)
-        graphDB_Session.run(cqlCreate318)
-        graphDB_Session.run(cqlCreate319)
-        graphDB_Session.run(cqlCreate320)
-        graphDB_Session.run(cqlCreate321)
-        graphDB_Session.run(cqlCreate322)
-        graphDB_Session.run(cqlCreate323)
-        graphDB_Session.run(cqlCreate324)
-        graphDB_Session.run(cqlCreate325)
-        graphDB_Session.run(cqlCreate326)
-        graphDB_Session.run(cqlCreate327)
-        graphDB_Session.run(cqlCreate328)
-        graphDB_Session.run(cqlCreate329)
-        graphDB_Session.run(cqlCreate330)
-        graphDB_Session.run(cqlCreate331)
-        graphDB_Session.run(cqlCreate332)
-        graphDB_Session.run(cqlCreate333)
-        graphDB_Session.run(cqlCreate334)
-        graphDB_Session.run(cqlCreate335)
-        graphDB_Session.run(cqlCreate336)
-        graphDB_Session.run(cqlCreate337)
-        graphDB_Session.run(cqlCreate338)
-        graphDB_Session.run(cqlCreate339)
-        graphDB_Session.run(cqlCreate340)
-        graphDB_Session.run(cqlCreate341)
-        graphDB_Session.run(cqlCreate342)
-        graphDB_Session.run(cqlCreate343)
-        graphDB_Session.run(cqlCreate344)
-        graphDB_Session.run(cqlCreate345)
-        graphDB_Session.run(cqlCreate346)
-        graphDB_Session.run(cqlCreate347)
-        graphDB_Session.run(cqlCreate348)
-        graphDB_Session.run(cqlCreate349)
-        graphDB_Session.run(cqlCreate350)
-        graphDB_Session.run(cqlCreate351)
-        graphDB_Session.run(cqlCreate352)
-        graphDB_Session.run(cqlCreate353)
-        graphDB_Session.run(cqlCreate354)
-        graphDB_Session.run(cqlCreate355)
-        graphDB_Session.run(cqlCreate356)
-        graphDB_Session.run(cqlCreate357)
-        graphDB_Session.run(cqlCreate358)
-        graphDB_Session.run(cqlCreate359)
-        graphDB_Session.run(cqlCreate361)
-        graphDB_Session.run(cqlCreate362)
-        graphDB_Session.run(cqlCreate363)
-        graphDB_Session.run(cqlCreate364)
-        graphDB_Session.run(cqlCreate365)
-        graphDB_Session.run(cqlCreate366)
-        graphDB_Session.run(cqlCreate367)
-        graphDB_Session.run(cqlCreate368)
-        graphDB_Session.run(cqlCreate369)
-        graphDB_Session.run(cqlCreate370)
-        graphDB_Session.run(cqlCreate371)
-        graphDB_Session.run(cqlCreate372)
-        graphDB_Session.run(cqlCreate373)
-        graphDB_Session.run(cqlCreate374)
-        graphDB_Session.run(cqlCreate375)
-        graphDB_Session.run(cqlCreate376)
-        graphDB_Session.run(cqlCreate377)
-        graphDB_Session.run(cqlCreate378)
-        graphDB_Session.run(cqlCreate379)
-        graphDB_Session.run(cqlCreate380)
-        graphDB_Session.run(cqlCreate381)
-        graphDB_Session.run(cqlCreate382)
-        graphDB_Session.run(cqlCreate383)
-        graphDB_Session.run(cqlCreate384)
-        graphDB_Session.run(cqlCreate385)
-        graphDB_Session.run(cqlCreate386)
-        graphDB_Session.run(cqlCreate387)
-        graphDB_Session.run(cqlCreate388)
-        graphDB_Session.run(cqlCreate389)
-        graphDB_Session.run(cqlCreate390)
-        graphDB_Session.run(cqlCreate391)
-        graphDB_Session.run(cqlCreate392)
-        graphDB_Session.run(cqlCreate393)
-        graphDB_Session.run(cqlCreate394)
-        graphDB_Session.run(cqlCreate395)
-        graphDB_Session.run(cqlCreate396)
-        graphDB_Session.run(cqlCreate397)
-        graphDB_Session.run(cqlCreate398)
-        graphDB_Session.run(cqlCreate399)
-        graphDB_Session.run(cqlCreate400)
-        graphDB_Session.run(cqlCreate401)
-        graphDB_Session.run(cqlCreate402)
-        graphDB_Session.run(cqlCreate403)
-        graphDB_Session.run(cqlCreate404)
-        graphDB_Session.run(cqlCreate405)
-        graphDB_Session.run(cqlCreate406)
-        graphDB_Session.run(cqlCreate407)
-        graphDB_Session.run(cqlCreate408)
-        graphDB_Session.run(cqlCreate409)
-        graphDB_Session.run(cqlCreate410)
-        graphDB_Session.run(cqlCreate411)
-        graphDB_Session.run(cqlCreate412)
-        graphDB_Session.run(cqlCreate413)
-        graphDB_Session.run(cqlCreate414)
-        graphDB_Session.run(cqlCreate416)
-        graphDB_Session.run(cqlCreate417)
-        graphDB_Session.run(cqlCreate418)
-        graphDB_Session.run(cqlCreate419)
-        graphDB_Session.run(cqlCreate420)
-        graphDB_Session.run(cqlCreate421)
-        graphDB_Session.run(cqlCreate422)
-        graphDB_Session.run(cqlCreate423)
-        graphDB_Session.run(cqlCreate424)
-        graphDB_Session.run(cqlCreate425)
-        graphDB_Session.run(cqlCreate426)
-        graphDB_Session.run(cqlCreate427)
-        graphDB_Session.run(cqlCreate428)
-        graphDB_Session.run(cqlCreate429)
-        graphDB_Session.run(cqlCreate430)
-        graphDB_Session.run(cqlCreate431)
-        graphDB_Session.run(cqlCreate432)
-        graphDB_Session.run(cqlCreate433)
-        graphDB_Session.run(cqlCreate434)
-        graphDB_Session.run(cqlCreate435)
-        graphDB_Session.run(cqlCreate436)
-        graphDB_Session.run(cqlCreate437)
-        graphDB_Session.run(cqlCreate438)
-        graphDB_Session.run(cqlCreate439)
-        graphDB_Session.run(cqlCreate440)
-        graphDB_Session.run(cqlCreate441)
-        graphDB_Session.run(cqlCreate442)
-        graphDB_Session.run(cqlCreate443)
-        graphDB_Session.run(cqlCreate444)
-        graphDB_Session.run(cqlCreate445)
-        graphDB_Session.run(cqlCreate446)
-        graphDB_Session.run(cqlCreate447)
-        graphDB_Session.run(cqlCreate448)
-        graphDB_Session.run(cqlCreate449)
-        graphDB_Session.run(cqlCreate450)
-        graphDB_Session.run(cqlCreate451)
-        graphDB_Session.run(cqlCreate452)
-        graphDB_Session.run(cqlCreate453)
-        graphDB_Session.run(cqlCreate454)
-        graphDB_Session.run(cqlCreate455)
-        graphDB_Session.run(cqlCreate456)
-        graphDB_Session.run(cqlCreate457)
-        graphDB_Session.run(cqlCreate458)
-        graphDB_Session.run(cqlCreate459)
-        graphDB_Session.run(cqlCreate460)
-        graphDB_Session.run(cqlCreate461)
-        graphDB_Session.run(cqlCreate462)
-        graphDB_Session.run(cqlCreate463)
-        graphDB_Session.run(cqlCreate464)
-        graphDB_Session.run(cqlCreate466)
-        graphDB_Session.run(cqlCreate467)
-        graphDB_Session.run(cqlCreate468)
-        graphDB_Session.run(cqlCreate469)
-        graphDB_Session.run(cqlCreate470)
-        graphDB_Session.run(cqlCreate471)
-        graphDB_Session.run(cqlCreate472)
-        graphDB_Session.run(cqlCreate473)
-        graphDB_Session.run(cqlCreate474)
-        graphDB_Session.run(cqlCreate475)
-        graphDB_Session.run(cqlCreate476)
-        graphDB_Session.run(cqlCreate477)
-        graphDB_Session.run(cqlCreate478)
-        graphDB_Session.run(cqlCreate479)
-        graphDB_Session.run(cqlCreate480)
-        graphDB_Session.run(cqlCreate481)
-        graphDB_Session.run(cqlCreate482)
-        graphDB_Session.run(cqlCreate483)
-        graphDB_Session.run(cqlCreate484)
-        graphDB_Session.run(cqlCreate485)
-        graphDB_Session.run(cqlCreate486)
-        graphDB_Session.run(cqlCreate487)
-        graphDB_Session.run(cqlCreate488)
-        graphDB_Session.run(cqlCreate489)
-        graphDB_Session.run(cqlCreate490)
-        graphDB_Session.run(cqlCreate491)
-        graphDB_Session.run(cqlCreate492)
-        graphDB_Session.run(cqlCreate493)
-        graphDB_Session.run(cqlCreate494)
-        graphDB_Session.run(cqlCreate495)
-        graphDB_Session.run(cqlCreate496)
-        graphDB_Session.run(cqlCreate497)
-        graphDB_Session.run(cqlCreate498)
-        graphDB_Session.run(cqlCreate499)
-        graphDB_Session.run(cqlCreate500)
-        graphDB_Session.run(cqlCreate501)
-        graphDB_Session.run(cqlCreate502)
-        graphDB_Session.run(cqlCreate503)
-        graphDB_Session.run(cqlCreate504)
-        graphDB_Session.run(cqlCreate505)
-        graphDB_Session.run(cqlCreate506)
-        graphDB_Session.run(cqlCreate507)
-        graphDB_Session.run(cqlCreate508)
-        graphDB_Session.run(cqlCreate509)
-        graphDB_Session.run(cqlCreate510)
-        graphDB_Session.run(cqlCreate511)
-        graphDB_Session.run(cqlCreate512)
-        graphDB_Session.run(cqlCreate513)
-        graphDB_Session.run(cqlCreate514)
-        graphDB_Session.run(cqlCreate515)
-        graphDB_Session.run(cqlCreate516)
-        graphDB_Session.run(cqlCreate517)
-        graphDB_Session.run(cqlCreate518)
-        graphDB_Session.run(cqlCreate519)
-        graphDB_Session.run(cqlCreate520)
-        graphDB_Session.run(cqlCreate521)
-        graphDB_Session.run(cqlCreate522)
-        graphDB_Session.run(cqlCreate523)
-        graphDB_Session.run(cqlCreate524)
-        graphDB_Session.run(cqlCreate525)
-        graphDB_Session.run(cqlCreate526)
-        graphDB_Session.run(cqlCreate527)
-        graphDB_Session.run(cqlCreate528)
-        graphDB_Session.run(cqlCreate529)
-        graphDB_Session.run(cqlCreate530)
-        graphDB_Session.run(cqlCreate531)
-        graphDB_Session.run(cqlCreate532)
-        graphDB_Session.run(cqlCreate533)
-        graphDB_Session.run(cqlCreate535)
-        graphDB_Session.run(cqlCreate536)
-        graphDB_Session.run(cqlCreate537)
-        graphDB_Session.run(cqlCreate538)
-        graphDB_Session.run(cqlCreate539)
-        graphDB_Session.run(cqlCreate540)
-        graphDB_Session.run(cqlCreate541)
-        graphDB_Session.run(cqlCreate542)
-        graphDB_Session.run(cqlCreate543)
-        graphDB_Session.run(cqlCreate544)
-        graphDB_Session.run(cqlCreate545)
-        graphDB_Session.run(cqlCreate546)
-        graphDB_Session.run(cqlCreate547)
-        graphDB_Session.run(cqlCreate549)
-        graphDB_Session.run(cqlCreate550)
-        graphDB_Session.run(cqlCreate551)
-        graphDB_Session.run(cqlCreate552)
-        graphDB_Session.run(cqlCreate553)
-        graphDB_Session.run(cqlCreate554)
-        graphDB_Session.run(cqlCreate555)
-        graphDB_Session.run(cqlCreate556)
-        graphDB_Session.run(cqlCreate557)
-        graphDB_Session.run(cqlCreate558)
-        graphDB_Session.run(cqlCreate559)
-        graphDB_Session.run(cqlCreate560)
-        graphDB_Session.run(cqlCreate561)
-        graphDB_Session.run(cqlCreate562)
-        graphDB_Session.run(cqlCreate563)
-        graphDB_Session.run(cqlCreate564)
-        graphDB_Session.run(cqlCreate565)
-        graphDB_Session.run(cqlCreate566)
-        graphDB_Session.run(cqlCreate567)
-        graphDB_Session.run(cqlCreate568)
-        graphDB_Session.run(cqlCreate569)
-        graphDB_Session.run(cqlCreate570)
-        graphDB_Session.run(cqlCreate571)
-        graphDB_Session.run(cqlCreate572)
-        graphDB_Session.run(cqlCreate573)
-        graphDB_Session.run(cqlCreate574)
-        graphDB_Session.run(cqlCreate575)
-        graphDB_Session.run(cqlCreate576)
-        graphDB_Session.run(cqlCreate577)
-        graphDB_Session.run(cqlCreate578)
-        graphDB_Session.run(cqlCreate579)
-        graphDB_Session.run(cqlCreate580)
-        graphDB_Session.run(cqlCreate582)
-        graphDB_Session.run(cqlCreate583)
-        graphDB_Session.run(cqlCreate584)
-        graphDB_Session.run(cqlCreate585)
-        graphDB_Session.run(cqlCreate586)
-        graphDB_Session.run(cqlCreate587)
-        graphDB_Session.run(cqlCreate588)
-        graphDB_Session.run(cqlCreate589)
-        graphDB_Session.run(cqlCreate590)
-        graphDB_Session.run(cqlCreate591)
-        graphDB_Session.run(cqlCreate592)
-        graphDB_Session.run(cqlCreate593)
-        graphDB_Session.run(cqlCreate595)
-        graphDB_Session.run(cqlCreate596)
-        graphDB_Session.run(cqlCreate597)
-        graphDB_Session.run(cqlCreate598)
-        graphDB_Session.run(cqlCreate599)
-        graphDB_Session.run(cqlCreate600)
-        graphDB_Session.run(cqlCreate601)
-        graphDB_Session.run(cqlCreate602)
-        graphDB_Session.run(cqlCreate603)
+    graph.run(cqlCreate1)
+    graph.run(cqlCreate2)
+    graph.run(cqlCreate3)
+    graph.run(cqlCreate4)
+    graph.run(cqlCreate5)
+    graph.run(cqlCreate6)
+    graph.run(cqlCreate7)
+    graph.run(cqlCreate8)
+    graph.run(cqlCreate9)
+    graph.run(cqlCreate10)
+    graph.run(cqlCreate11)
+    graph.run(cqlCreate12)
+    graph.run(cqlCreate13)
+    graph.run(cqlCreate14)
+    graph.run(cqlCreate15)
+    graph.run(cqlCreate16)
+    graph.run(cqlCreate17)
+    graph.run(cqlCreate18)
+    graph.run(cqlCreate19)
+    graph.run(cqlCreate20)
+    graph.run(cqlCreate21)
+    graph.run(cqlCreate22)
+    graph.run(cqlCreate23)
+    graph.run(cqlCreate24)
+    graph.run(cqlCreate25)
+    graph.run(cqlCreate26)
+    graph.run(cqlCreate27)
+    graph.run(cqlCreate28)
+    graph.run(cqlCreate29)
+    graph.run(cqlCreate30)
+    graph.run(cqlCreate31)
+    graph.run(cqlCreate32)
+    graph.run(cqlCreate33)
+    graph.run(cqlCreate34)
+    graph.run(cqlCreate35)
+    graph.run(cqlCreate36)
+    graph.run(cqlCreate37)
+    graph.run(cqlCreate38)
+    graph.run(cqlCreate39)
+    graph.run(cqlCreate40)
+    graph.run(cqlCreate41)
+    graph.run(cqlCreate42)
+    graph.run(cqlCreate43)
+    graph.run(cqlCreate44)
+    graph.run(cqlCreate45)
+    graph.run(cqlCreate46)
+    graph.run(cqlCreate48)
+    graph.run(cqlCreate49)
+    graph.run(cqlCreate50)
+    graph.run(cqlCreate51)
+    graph.run(cqlCreate52)
+    graph.run(cqlCreate53)
+    graph.run(cqlCreate54)
+    graph.run(cqlCreate55)
+    graph.run(cqlCreate56)
+    graph.run(cqlCreate57)
+    graph.run(cqlCreate58)
+    graph.run(cqlCreate59)
+    graph.run(cqlCreate60)
+    graph.run(cqlCreate61)
+    graph.run(cqlCreate62)
+    graph.run(cqlCreate63)
+    graph.run(cqlCreate64)
+    graph.run(cqlCreate65)
+    graph.run(cqlCreate66)
+    graph.run(cqlCreate67)
+    graph.run(cqlCreate68)
+    graph.run(cqlCreate69)
+    graph.run(cqlCreate70)
+    graph.run(cqlCreate71)
+    graph.run(cqlCreate72)
+    graph.run(cqlCreate73)
+    graph.run(cqlCreate74)
+    graph.run(cqlCreate75)
+    graph.run(cqlCreate76)
+    graph.run(cqlCreate77)
+    graph.run(cqlCreate78)
+    graph.run(cqlCreate79)
+    graph.run(cqlCreate80)
+    graph.run(cqlCreate81)
+    graph.run(cqlCreate82)
+    graph.run(cqlCreate83)
+    graph.run(cqlCreate84)
+    graph.run(cqlCreate85)
+    graph.run(cqlCreate86)
+    graph.run(cqlCreate87)
+    graph.run(cqlCreate88)
+    graph.run(cqlCreate89)
+    graph.run(cqlCreate90)
+    graph.run(cqlCreate91)
+    graph.run(cqlCreate92)
+    graph.run(cqlCreate93)
+    graph.run(cqlCreate94)
+    graph.run(cqlCreate95)
+    graph.run(cqlCreate96)
+    graph.run(cqlCreate97)
+    graph.run(cqlCreate98)
+    graph.run(cqlCreate99)
+    graph.run(cqlCreate100)
+    graph.run(cqlCreate101)
+    graph.run(cqlCreate102)
+    graph.run(cqlCreate103)
+    graph.run(cqlCreate104)
+    graph.run(cqlCreate106)
+    graph.run(cqlCreate107)
+    graph.run(cqlCreate108)
+    graph.run(cqlCreate109)
+    graph.run(cqlCreate110)
+    graph.run(cqlCreate111)
+    graph.run(cqlCreate112)
+    graph.run(cqlCreate113)
+    graph.run(cqlCreate114)
+    graph.run(cqlCreate115)
+    graph.run(cqlCreate116)
+    graph.run(cqlCreate117)
+    graph.run(cqlCreate118)
+    graph.run(cqlCreate119)
+    graph.run(cqlCreate120)
+    graph.run(cqlCreate121)
+    graph.run(cqlCreate122)
+    graph.run(cqlCreate123)
+    graph.run(cqlCreate124)
+    graph.run(cqlCreate125)
+    graph.run(cqlCreate126)
+    graph.run(cqlCreate127)
+    graph.run(cqlCreate128)
+    graph.run(cqlCreate129)
+    graph.run(cqlCreate130)
+    graph.run(cqlCreate131)
+    graph.run(cqlCreate132)
+    graph.run(cqlCreate133)
+    graph.run(cqlCreate134)
+    graph.run(cqlCreate135)
+    graph.run(cqlCreate136)
+    graph.run(cqlCreate137)
+    graph.run(cqlCreate138)
+    graph.run(cqlCreate139)
+    graph.run(cqlCreate140)
+    graph.run(cqlCreate141)
+    graph.run(cqlCreate142)
+    graph.run(cqlCreate143)
+    graph.run(cqlCreate144)
+    graph.run(cqlCreate145)
+    graph.run(cqlCreate146)
+    graph.run(cqlCreate147)
+    graph.run(cqlCreate148)
+    graph.run(cqlCreate149)
+    graph.run(cqlCreate150)
+    graph.run(cqlCreate151)
+    graph.run(cqlCreate152)
+    graph.run(cqlCreate153)
+    graph.run(cqlCreate154)
+    graph.run(cqlCreate155)
+    graph.run(cqlCreate156)
+    graph.run(cqlCreate157)
+    graph.run(cqlCreate158)
+    graph.run(cqlCreate159)
+    graph.run(cqlCreate160)
+    graph.run(cqlCreate161)
+    graph.run(cqlCreate162)
+    graph.run(cqlCreate164)
+    graph.run(cqlCreate165)
+    graph.run(cqlCreate166)
+    graph.run(cqlCreate167)
+    graph.run(cqlCreate168)
+    graph.run(cqlCreate169)
+    graph.run(cqlCreate170)
+    graph.run(cqlCreate171)
+    graph.run(cqlCreate172)
+    graph.run(cqlCreate173)
+    graph.run(cqlCreate174)
+    graph.run(cqlCreate175)
+    graph.run(cqlCreate176)
+    graph.run(cqlCreate177)
+    graph.run(cqlCreate178)
+    graph.run(cqlCreate179)
+    graph.run(cqlCreate180)
+    graph.run(cqlCreate181)
+    graph.run(cqlCreate182)
+    graph.run(cqlCreate183)
+    graph.run(cqlCreate184)
+    graph.run(cqlCreate185)
+    graph.run(cqlCreate186)
+    graph.run(cqlCreate187)
+    graph.run(cqlCreate188)
+    graph.run(cqlCreate189)
+    graph.run(cqlCreate190)
+    graph.run(cqlCreate191)
+    graph.run(cqlCreate192)
+    graph.run(cqlCreate193)
+    graph.run(cqlCreate194)
+    graph.run(cqlCreate195)
+    graph.run(cqlCreate196)
+    graph.run(cqlCreate197)
+    graph.run(cqlCreate198)
+    graph.run(cqlCreate199)
+    graph.run(cqlCreate200)
+    graph.run(cqlCreate201)
+    graph.run(cqlCreate202)
+    graph.run(cqlCreate203)
+    graph.run(cqlCreate204)
+    graph.run(cqlCreate205)
+    graph.run(cqlCreate206)
+    graph.run(cqlCreate207)
+    graph.run(cqlCreate208)
+    graph.run(cqlCreate209)
+    graph.run(cqlCreate210)
+    graph.run(cqlCreate211)
+    graph.run(cqlCreate212)
+    graph.run(cqlCreate213)
+    graph.run(cqlCreate214)
+    graph.run(cqlCreate215)
+    graph.run(cqlCreate216)
+    graph.run(cqlCreate217)
+    graph.run(cqlCreate218)
+    graph.run(cqlCreate219)
+    graph.run(cqlCreate220)
+    graph.run(cqlCreate221)
+    graph.run(cqlCreate222)
+    graph.run(cqlCreate223)
+    graph.run(cqlCreate224)
+    graph.run(cqlCreate225)
+    graph.run(cqlCreate226)
+    graph.run(cqlCreate227)
+    graph.run(cqlCreate228)
+    graph.run(cqlCreate229)
+    graph.run(cqlCreate230)
+    graph.run(cqlCreate231)
+    graph.run(cqlCreate233)
+    graph.run(cqlCreate234)
+    graph.run(cqlCreate235)
+    graph.run(cqlCreate236)
+    graph.run(cqlCreate237)
+    graph.run(cqlCreate238)
+    graph.run(cqlCreate239)
+    graph.run(cqlCreate240)
+    graph.run(cqlCreate241)
+    graph.run(cqlCreate242)
+    graph.run(cqlCreate243)
+    graph.run(cqlCreate244)
+    graph.run(cqlCreate245)
+    graph.run(cqlCreate246)
+    graph.run(cqlCreate247)
+    graph.run(cqlCreate248)
+    graph.run(cqlCreate249)
+    graph.run(cqlCreate250)
+    graph.run(cqlCreate251)
+    graph.run(cqlCreate252)
+    graph.run(cqlCreate253)
+    graph.run(cqlCreate254)
+    graph.run(cqlCreate255)
+    graph.run(cqlCreate256)
+    graph.run(cqlCreate257)
+    graph.run(cqlCreate258)
+    graph.run(cqlCreate259)
+    graph.run(cqlCreate260)
+    graph.run(cqlCreate261)
+    graph.run(cqlCreate262)
+    graph.run(cqlCreate263)
+    graph.run(cqlCreate264)
+    graph.run(cqlCreate265)
+    graph.run(cqlCreate266)
+    graph.run(cqlCreate267)
+    graph.run(cqlCreate268)
+    graph.run(cqlCreate269)
+    graph.run(cqlCreate270)
+    graph.run(cqlCreate271)
+    graph.run(cqlCreate272)
+    graph.run(cqlCreate273)
+    graph.run(cqlCreate274)
+    graph.run(cqlCreate275)
+    graph.run(cqlCreate276)
+    graph.run(cqlCreate277)
+    graph.run(cqlCreate278)
+    graph.run(cqlCreate279)
+    graph.run(cqlCreate280)
+    graph.run(cqlCreate281)
+    graph.run(cqlCreate282)
+    graph.run(cqlCreate283)
+    graph.run(cqlCreate284)
+    graph.run(cqlCreate285)
+    graph.run(cqlCreate286)
+    graph.run(cqlCreate287)
+    graph.run(cqlCreate288)
+    graph.run(cqlCreate289)
+    graph.run(cqlCreate290)
+    graph.run(cqlCreate292)
+    graph.run(cqlCreate293)
+    graph.run(cqlCreate294)
+    graph.run(cqlCreate295)
+    graph.run(cqlCreate296)
+    graph.run(cqlCreate297)
+    graph.run(cqlCreate298)
+    graph.run(cqlCreate299)
+    graph.run(cqlCreate300)
+    graph.run(cqlCreate301)
+    graph.run(cqlCreate302)
+    graph.run(cqlCreate303)
+    graph.run(cqlCreate304)
+    graph.run(cqlCreate305)
+    graph.run(cqlCreate306)
+    graph.run(cqlCreate307)
+    graph.run(cqlCreate308)
+    graph.run(cqlCreate309)
+    graph.run(cqlCreate310)
+    graph.run(cqlCreate311)
+    graph.run(cqlCreate312)
+    graph.run(cqlCreate313)
+    graph.run(cqlCreate314)
+    graph.run(cqlCreate315)
+    graph.run(cqlCreate316)
+    graph.run(cqlCreate317)
+    graph.run(cqlCreate318)
+    graph.run(cqlCreate319)
+    graph.run(cqlCreate320)
+    graph.run(cqlCreate321)
+    graph.run(cqlCreate322)
+    graph.run(cqlCreate323)
+    graph.run(cqlCreate324)
+    graph.run(cqlCreate325)
+    graph.run(cqlCreate326)
+    graph.run(cqlCreate327)
+    graph.run(cqlCreate328)
+    graph.run(cqlCreate329)
+    graph.run(cqlCreate330)
+    graph.run(cqlCreate331)
+    graph.run(cqlCreate332)
+    graph.run(cqlCreate333)
+    graph.run(cqlCreate334)
+    graph.run(cqlCreate335)
+    graph.run(cqlCreate336)
+    graph.run(cqlCreate337)
+    graph.run(cqlCreate338)
+    graph.run(cqlCreate339)
+    graph.run(cqlCreate340)
+    graph.run(cqlCreate341)
+    graph.run(cqlCreate342)
+    graph.run(cqlCreate343)
+    graph.run(cqlCreate344)
+    graph.run(cqlCreate345)
+    graph.run(cqlCreate346)
+    graph.run(cqlCreate347)
+    graph.run(cqlCreate348)
+    graph.run(cqlCreate349)
+    graph.run(cqlCreate350)
+    graph.run(cqlCreate351)
+    graph.run(cqlCreate352)
+    graph.run(cqlCreate353)
+    graph.run(cqlCreate354)
+    graph.run(cqlCreate355)
+    graph.run(cqlCreate356)
+    graph.run(cqlCreate357)
+    graph.run(cqlCreate358)
+    graph.run(cqlCreate359)
+    graph.run(cqlCreate361)
+    graph.run(cqlCreate362)
+    graph.run(cqlCreate363)
+    graph.run(cqlCreate364)
+    graph.run(cqlCreate365)
+    graph.run(cqlCreate366)
+    graph.run(cqlCreate367)
+    graph.run(cqlCreate368)
+    graph.run(cqlCreate369)
+    graph.run(cqlCreate370)
+    graph.run(cqlCreate371)
+    graph.run(cqlCreate372)
+    graph.run(cqlCreate373)
+    graph.run(cqlCreate374)
+    graph.run(cqlCreate375)
+    graph.run(cqlCreate376)
+    graph.run(cqlCreate377)
+    graph.run(cqlCreate378)
+    graph.run(cqlCreate379)
+    graph.run(cqlCreate380)
+    graph.run(cqlCreate381)
+    graph.run(cqlCreate382)
+    graph.run(cqlCreate383)
+    graph.run(cqlCreate384)
+    graph.run(cqlCreate385)
+    graph.run(cqlCreate386)
+    graph.run(cqlCreate387)
+    graph.run(cqlCreate388)
+    graph.run(cqlCreate389)
+    graph.run(cqlCreate390)
+    graph.run(cqlCreate391)
+    graph.run(cqlCreate392)
+    graph.run(cqlCreate393)
+    graph.run(cqlCreate394)
+    graph.run(cqlCreate395)
+    graph.run(cqlCreate396)
+    graph.run(cqlCreate397)
+    graph.run(cqlCreate398)
+    graph.run(cqlCreate399)
+    graph.run(cqlCreate400)
+    graph.run(cqlCreate401)
+    graph.run(cqlCreate402)
+    graph.run(cqlCreate403)
+    graph.run(cqlCreate404)
+    graph.run(cqlCreate405)
+    graph.run(cqlCreate406)
+    graph.run(cqlCreate407)
+    graph.run(cqlCreate408)
+    graph.run(cqlCreate409)
+    graph.run(cqlCreate410)
+    graph.run(cqlCreate411)
+    graph.run(cqlCreate412)
+    graph.run(cqlCreate413)
+    graph.run(cqlCreate414)
+    graph.run(cqlCreate416)
+    graph.run(cqlCreate417)
+    graph.run(cqlCreate418)
+    graph.run(cqlCreate419)
+    graph.run(cqlCreate420)
+    graph.run(cqlCreate421)
+    graph.run(cqlCreate422)
+    graph.run(cqlCreate423)
+    graph.run(cqlCreate424)
+    graph.run(cqlCreate425)
+    graph.run(cqlCreate426)
+    graph.run(cqlCreate427)
+    graph.run(cqlCreate428)
+    graph.run(cqlCreate429)
+    graph.run(cqlCreate430)
+    graph.run(cqlCreate431)
+    graph.run(cqlCreate432)
+    graph.run(cqlCreate433)
+    graph.run(cqlCreate434)
+    graph.run(cqlCreate435)
+    graph.run(cqlCreate436)
+    graph.run(cqlCreate437)
+    graph.run(cqlCreate438)
+    graph.run(cqlCreate439)
+    graph.run(cqlCreate440)
+    graph.run(cqlCreate441)
+    graph.run(cqlCreate442)
+    graph.run(cqlCreate443)
+    graph.run(cqlCreate444)
+    graph.run(cqlCreate445)
+    graph.run(cqlCreate446)
+    graph.run(cqlCreate447)
+    graph.run(cqlCreate448)
+    graph.run(cqlCreate449)
+    graph.run(cqlCreate450)
+    graph.run(cqlCreate451)
+    graph.run(cqlCreate452)
+    graph.run(cqlCreate453)
+    graph.run(cqlCreate454)
+    graph.run(cqlCreate455)
+    graph.run(cqlCreate456)
+    graph.run(cqlCreate457)
+    graph.run(cqlCreate458)
+    graph.run(cqlCreate459)
+    graph.run(cqlCreate460)
+    graph.run(cqlCreate461)
+    graph.run(cqlCreate462)
+    graph.run(cqlCreate463)
+    graph.run(cqlCreate464)
+    graph.run(cqlCreate466)
+    graph.run(cqlCreate467)
+    graph.run(cqlCreate468)
+    graph.run(cqlCreate469)
+    graph.run(cqlCreate470)
+    graph.run(cqlCreate471)
+    graph.run(cqlCreate472)
+    graph.run(cqlCreate473)
+    graph.run(cqlCreate474)
+    graph.run(cqlCreate475)
+    graph.run(cqlCreate476)
+    graph.run(cqlCreate477)
+    graph.run(cqlCreate478)
+    graph.run(cqlCreate479)
+    graph.run(cqlCreate480)
+    graph.run(cqlCreate481)
+    graph.run(cqlCreate482)
+    graph.run(cqlCreate483)
+    graph.run(cqlCreate484)
+    graph.run(cqlCreate485)
+    graph.run(cqlCreate486)
+    graph.run(cqlCreate487)
+    graph.run(cqlCreate488)
+    graph.run(cqlCreate489)
+    graph.run(cqlCreate490)
+    graph.run(cqlCreate491)
+    graph.run(cqlCreate492)
+    graph.run(cqlCreate493)
+    graph.run(cqlCreate494)
+    graph.run(cqlCreate495)
+    graph.run(cqlCreate496)
+    graph.run(cqlCreate497)
+    graph.run(cqlCreate498)
+    graph.run(cqlCreate499)
+    graph.run(cqlCreate500)
+    graph.run(cqlCreate501)
+    graph.run(cqlCreate502)
+    graph.run(cqlCreate503)
+    graph.run(cqlCreate504)
+    graph.run(cqlCreate505)
+    graph.run(cqlCreate506)
+    graph.run(cqlCreate507)
+    graph.run(cqlCreate508)
+    graph.run(cqlCreate509)
+    graph.run(cqlCreate510)
+    graph.run(cqlCreate511)
+    graph.run(cqlCreate512)
+    graph.run(cqlCreate513)
+    graph.run(cqlCreate514)
+    graph.run(cqlCreate515)
+    graph.run(cqlCreate516)
+    graph.run(cqlCreate517)
+    graph.run(cqlCreate518)
+    graph.run(cqlCreate519)
+    graph.run(cqlCreate520)
+    graph.run(cqlCreate521)
+    graph.run(cqlCreate522)
+    graph.run(cqlCreate523)
+    graph.run(cqlCreate524)
+    graph.run(cqlCreate525)
+    graph.run(cqlCreate526)
+    graph.run(cqlCreate527)
+    graph.run(cqlCreate528)
+    graph.run(cqlCreate529)
+    graph.run(cqlCreate530)
+    graph.run(cqlCreate531)
+    graph.run(cqlCreate532)
+    graph.run(cqlCreate533)
+    graph.run(cqlCreate535)
+    graph.run(cqlCreate536)
+    graph.run(cqlCreate537)
+    graph.run(cqlCreate538)
+    graph.run(cqlCreate539)
+    graph.run(cqlCreate540)
+    graph.run(cqlCreate541)
+    graph.run(cqlCreate542)
+    graph.run(cqlCreate543)
+    graph.run(cqlCreate544)
+    graph.run(cqlCreate545)
+    graph.run(cqlCreate546)
+    graph.run(cqlCreate547)
+    graph.run(cqlCreate549)
+    graph.run(cqlCreate550)
+    graph.run(cqlCreate551)
+    graph.run(cqlCreate552)
+    graph.run(cqlCreate553)
+    graph.run(cqlCreate554)
+    graph.run(cqlCreate555)
+    graph.run(cqlCreate556)
+    graph.run(cqlCreate557)
+    graph.run(cqlCreate558)
+    graph.run(cqlCreate559)
+    graph.run(cqlCreate560)
+    graph.run(cqlCreate561)
+    graph.run(cqlCreate562)
+    graph.run(cqlCreate563)
+    graph.run(cqlCreate564)
+    graph.run(cqlCreate565)
+    graph.run(cqlCreate566)
+    graph.run(cqlCreate567)
+    graph.run(cqlCreate568)
+    graph.run(cqlCreate569)
+    graph.run(cqlCreate570)
+    graph.run(cqlCreate571)
+    graph.run(cqlCreate572)
+    graph.run(cqlCreate573)
+    graph.run(cqlCreate574)
+    graph.run(cqlCreate575)
+    graph.run(cqlCreate576)
+    graph.run(cqlCreate577)
+    graph.run(cqlCreate578)
+    graph.run(cqlCreate579)
+    graph.run(cqlCreate580)
+    graph.run(cqlCreate582)
+    graph.run(cqlCreate583)
+    graph.run(cqlCreate584)
+    graph.run(cqlCreate585)
+    graph.run(cqlCreate586)
+    graph.run(cqlCreate587)
+    graph.run(cqlCreate588)
+    graph.run(cqlCreate589)
+    graph.run(cqlCreate590)
+    graph.run(cqlCreate591)
+    graph.run(cqlCreate592)
+    graph.run(cqlCreate593)
+    graph.run(cqlCreate595)
+    graph.run(cqlCreate596)
+    graph.run(cqlCreate597)
+    graph.run(cqlCreate598)
+    graph.run(cqlCreate599)
+    graph.run(cqlCreate600)
+    graph.run(cqlCreate601)
+    graph.run(cqlCreate602)
+    graph.run(cqlCreate603)
 #create_relationships()
