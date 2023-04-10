@@ -11307,11 +11307,8 @@ def check_locations_0():
         wkt_data = wkt_file.read()
         tocantins_polygon = loads(wkt_data)
 
-    # Connect to Neo4j
-    graph = Graph("bolt://localhost:7687", auth=("neo4j", "12345678"))
-
     # Loop through each row in the CSV file
-    for index, row in df.iterrows():
+    for row in df.iterrows():
         # Extract latitude and longitude values from the CSV data
         latitude = row["latitude"]
         longitude = row["longitude"]
@@ -11792,7 +11789,7 @@ def check_locations_1():
         tocantins_polygon = loads(wkt_data)
 
     # Loop through each row in the CSV file
-    for index, row in df.iterrows():
+    for row in df.iterrows():
         # Extract latitude and longitude values from the CSV data
         latitude = row["latitude"]
         longitude = row["longitude"]
